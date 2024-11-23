@@ -58,6 +58,43 @@
           - MYSQL_PASSWORD=1234
           - MYSQL_DATABASE=polardb_catalog
     ################################################
+
+### Kubernetes에 배포하기(deployment.yml, service.yml)
+
+        apiVersion: apps/v1
+        kind: Deployment
+        metadata:
+          name: catalog-service
+          labels:
+            app: catalog-service
+        spec:
+          replicas: 1
+          selector:
+            matchLabels:
+              app: catalog-service
+          template:
+            metadata:
+              labels:
+                app: catalog-service
+            spec:
+              containers:
+                - name: catalog-service
+                  image: catalog-service
+                  imagePullPolicy: IfNotPresent
+                  lifecycle:
+                    preStop:
+                      exec:
+                        command: [ "sh", "-c", "sleep 5" ]
+                  ports:
+                    - containerPort: 9001
+                  env:
+                    - name: BPL_JVM_THREAD_COUNT
+                      value: "50"
+                    - name: SPRING_DATASOURCE_URL
+                      value: jdbc:mysql://polar-postgres/polardb_catalog
+                    - name: SPRING_PROFILES_ACTIVE
+                      value: testdata
+
     
     docker compose up -d
     docker compose down
