@@ -62,6 +62,27 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     docker compose up -d
     docker compose down
 
+### Docker Private Registry 구축하기
+
+    docker pull registry
+    docker run -itd --name local-registry -p 5000:5000 registry
+    
+    /etc/init.d/docker에 DOCKER_OPTS=--insecure-registry localhost:5000 추가
+    
+    /etc/docker/daemon.json 생성후
+    {
+        "insecure-registries": ["localhost:5000"]
+    }
+    sudo systemctl restart docker 서비스 재시작
+    
+    docker tag catalog-service:0.0.1-SNAPSHOT localhost:5000/catalog-service:0.0.1-SNAPSHOT
+    docker push localhost:5000/catalog-service:0.0.1-SNAPSHOT
+    docker images localhost:5000/catalog-service 검색하기
+    ocker rmi localhost:5000/catalog-service:0.0.1-SNAPSHOT 삭제하기
+    
+    docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_USER=user1 -e MYSQL_PASSWORD=1234 -e MYSQL_DATABASE=polardb_catalog --net mynet -d -p 3306:3306 mysql:latest
+    docker run --name catalog-service -d -p 9001:9001 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/polardb_catalog  --net mynet localhost:5000/catalog-service:0.0.1-SNAPSHOT
+
 ### Kubernetes에 배포하기(deployment.yml, service.yml)
 
     ### deployment.yml #############################
