@@ -22,11 +22,42 @@
        mvn spring-boot:build-image(Maven 프로젝트인경우)
     
     # docker run으로 배포하기
-    docker network create -d bridge mynet
+    docker network create -d bridge mynet(이전에 만든 네트워크가 있으면 실행할 필요가 없음)
     docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_USER=user1 -e MYSQL_PASSWORD=1234 -e MYSQL_DATABASE=polardb_catalog --net mynet -d -p 3306:3306 mysql:latest
     docker run --name catalog-service-jpa -d -p 9001:9001 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/polardb_catalog  --net mynet catalog-service-jpa:0.0.1-SNAPSHOT
 
 ### Docker Compose로 배포하기(docker-compose.yml)
     # docker compose으로 배포하기
-    docker compose up -d
-    docker compose down
+    docker-compose.yml
+    ################################################
+    services:
+    
+      # Applications
+      catalog-service:
+        depends_on:
+          - polar-mysql
+        image: "catalog-service-jpa:0.0.1-SNAPSHOT"
+        container_name: "catalog-service-jpa"
+        restart: always
+        ports:
+          - 9001:9001
+        environment:
+          - SPRING_DATASOURCE_URL=jdbc:mysql://polar-mysql:3306/polardb_catalog
+          - SPRING_DATASOURCE_USERNAME=user1
+          - SPRING_DATASOURCE_PASSWORD=1234
+      
+      # Backing Services
+      polar-mysql:
+        image: "mysql:latest"
+        container_name: "polar-mysql"
+        ports:
+          - 3306:3306
+        environment:
+          - MYSQL_ROOT_PASSWORD=1234
+          - MYSQL_USER=user1
+          - MYSQL_PASSWORD=1234
+          - MYSQL_DATABASE=polardb_catalog
+    ################################################
+    
+    docker compose up -d(실행시)
+    docker compose down(해제시)
