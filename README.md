@@ -59,5 +59,5 @@
           - MYSQL_DATABASE=polardb_catalog
     ################################################
     
-    docker compose up -d(실행시)
-    docker compose down(해제시)
+    docker compose up -d
+    docker compose down
