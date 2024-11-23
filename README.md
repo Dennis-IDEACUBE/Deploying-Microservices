@@ -113,3 +113,6 @@
         port: 80
         targetPort: 9001  
     ################################################
+
+    kubectl apply -f deployment.yml
+    kubectl apply -f service.yml
