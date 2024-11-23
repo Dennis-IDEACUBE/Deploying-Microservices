@@ -15,6 +15,7 @@
 
     - catalog-service
     # docker run으로 mysql container 생성하기
+    docker network create -d bridge mynet
     docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_USER=user1 -e MYSQL_PASSWORD=1234 -e MYSQL_DATABASE=polardb_catalog_dev --net mynet -d -p 3306:3306 mysql:latest
     
     => ./gradlew clean bootBuildImage (Buildpack을 사용: Permission denied경우, chmod 755 ./gradlew)
