@@ -24,7 +24,7 @@
     # docker run으로 배포하기
     docker network create -d bridge mynet(이전에 만든 네트워크가 있으면 실행할 필요가 없음)
     docker run --name mysql-db -e MYSQL_ROOT_PASSWORD=1234 -e MYSQL_USER=user1 -e MYSQL_PASSWORD=1234 -e MYSQL_DATABASE=polardb_catalog --net mynet -d -p 3306:3306 mysql:latest
-    docker run --name catalog-service-jpa -d -p 9001:9001 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/polardb_catalog  --net mynet catalog-service-jpa:0.0.1-SNAPSHOT
+    docker run --name catalog-service -d -p 9001:9001 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/polardb_catalog  --net mynet catalog-service:0.0.1-SNAPSHOT
 
 ### Docker Compose로 배포하기(docker-compose.yml)
     # docker compose으로 배포하기
@@ -36,8 +36,8 @@
       catalog-service:
         depends_on:
           - polar-mysql
-        image: "catalog-service-jpa:0.0.1-SNAPSHOT"
-        container_name: "catalog-service-jpa"
+        image: "catalog-service:0.0.1-SNAPSHOT"
+        container_name: "catalog-service"
         restart: always
         ports:
           - 9001:9001
