@@ -150,7 +150,7 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
 
     ## Master Node Only
     ##############################################################################################
-    sudo kubeadm init --apiserver-advertise-address=192.168.10.2 --pod-network-cidr=192.168.0.0/16 --cri-socket /run/containerd/containerd.sock
+    sudo kubeadm init --apiserver-advertise-address=192.168.10.2 --pod-network-cidr=192.168.0.0/16 --cri-socket /run/containerd/containerd.sock --ignore-preflight-errors Swap
 
     mkdir -p $HOME/.kube
     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
