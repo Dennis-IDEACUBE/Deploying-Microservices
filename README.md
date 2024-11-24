@@ -86,7 +86,7 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
 ### Kubernetes Cluster 구성하기 ###
     ## Master Node & Worker Node
     ##############################################################################################
-    sudo nano /etc/netplan/01-network-manager-all.yaml # 각각의 ip address 설정
+    sudo nano /etc/cloud/cloud.cfg.d/90-installer-network.cfg # 각각의 ip address 설정
     sudo su
     printf "\n10.0.2.4 myserver01\n10.0.2.5 myserver02\n10.0.2.6 myserver03\n\n" >> /etc/hosts
     exit
