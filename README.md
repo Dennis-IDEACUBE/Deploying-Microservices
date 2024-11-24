@@ -93,7 +93,7 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     * swap 및 hostname 설정
     sudo apt-get update
     sudo swapoff -a
-    sudo vim /etc/fstab
+    sudo nano /etc/fstab
     #Comment out (add a # at the beginning of) the line(s) that reference swap. For example
     # /swapfile none swap sw 0 0
     
