@@ -84,8 +84,8 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     docker run --name catalog-service -d -p 9001:9001 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/polardb_catalog  --net mynet localhost:5000/catalog-service:0.0.1-SNAPSHOT
 
 ### Kubernetes Cluster 구성하기 ###
-    <ui>## Master Node & Worker Node</ui>
-
+    ## Master Node & Worker Node
+    ##############################################################################################
     sudo nano /etc/netplan/01-network-manager-all.yaml # 각각의 ip address 설정
     
     sudo printf "\n10.0.2.4 myserver01\n10.0.2.5 myserver02\n10.0.2.6 myserver03\n\n" >> /etc/hosts
@@ -148,7 +148,8 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     sudo apt-mark hold kubelet kubeadm kubectl
 
 
-    # Master Node Only
+    ## Master Node Only
+    ##############################################################################################
     sudo kubeadm init --apiserver-advertise-address=192.168.10.2 --pod-network-cidr=192.168.0.0/16 --cri-socket /run/containerd/containerd.sock --ignore-preflight-errors Swap
 
     mkdir -p $HOME/.kube
@@ -160,7 +161,8 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     kubeadm token create --print-join-command
     
 
-    # Worker Node Only
+    ## Worker Node Only
+    ##############################################################################################
     sudo kubeadm join 192.168.10.2:6443 --token
 
 ### Kubernetes에 배포하기(deployment.yml, service.yml)
