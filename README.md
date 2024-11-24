@@ -84,80 +84,79 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     docker run --name catalog-service -d -p 9001:9001 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/polardb_catalog  --net mynet localhost:5000/catalog-service:0.0.1-SNAPSHOT
 
 ### Kubernetes Cluster 구성하기 ###
-    ## ALL: (공통사항)
+    ## Master Node & Worker Node
+
+    sudo vim /etc/netplan/01-network-manager-all.yaml # 각각의 ip address 설정
     
-    sudo su
+    sudo printf "\n10.0.2.4 myserver01\n10.0.2.5 myserver02\n10.0.2.6 myserver03\n\n" >> /etc/hosts
     
-    printf "\n10.0.2.4 myserver01\n10.0.2.5 myserver02\n10.0.2.6 myserver03\n\n" >> /etc/hosts
+    * swap 및 hostname 설정
+    sudo apt-get update
+    sudo swapoff -a
+    sudo vim /etc/fstab
+    #Comment out (add a # at the beginning of) the line(s) that reference swap. For example
+    # /swapfile none swap sw 0 0
     
-    printf "overlay\nbr_netfilter\n" >> /etc/modules-load.d/containerd.conf
+    sudo hostnamectl set-hostname "myserver01"
+    sudo init 6
     
-    modprobe overlay
-    modprobe br_netfilter
     
-    printf "net.bridge.bridge-nf-call-iptables = 1\nnet.ipv4.ip_forward = 1\nnet.bridge.bridge-nf-call-ip6tables = 1\n" >> /etc/sysctl.d/99-kubernetes-cri.conf
+    * modules 설정
+    cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+    overlay
+    br_netfilter
+    EOF
     
-    sysctl --system
+    sudo modprobe br_netfilter
+    sudo modprobe overlay
     
-    wget https://github.com/containerd/containerd/releases/download/v1.7.13/containerd-1.7.13-linux-amd64.tar.gz -P /tmp/
-    tar Cxzvf /usr/local /tmp/containerd-1.7.13-linux-amd64.tar.gz
-    wget https://raw.githubusercontent.com/containerd/containerd/main/containerd.service -P /etc/systemd/system/
-    systemctl daemon-reload
-    systemctl enable --now containerd
+    * Networking 설정
+    cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+    net.bridge.bridge-nf-call-iptables  = 1
+    net.bridge.bridge-nf-call-ip6tables = 1
+    net.ipv4.ip_forward                 = 1
+    EOF
     
-    wget https://github.com/opencontainers/runc/releases/download/v1.1.12/runc.amd64 -P /tmp/
-    install -m 755 /tmp/runc.amd64 /usr/local/sbin/runc
+    sudo sysctl --system
     
-    wget https://github.com/containernetworking/plugins/releases/download/v1.4.0/cni-plugins-linux-amd64-v1.4.0.tgz -P /tmp/
-    mkdir -p /opt/cni/bin
-    tar Cxzvf /opt/cni/bin /tmp/cni-plugins-linux-amd64-v1.4.0.tgz
+    * Containerd 설정
+    sudo apt-get update
+    sudo apt-get install -y containerd
     
-    mkdir -p /etc/containerd
-    containerd config default | tee /etc/containerd/config.toml   <<<<<<<<<<< manually edit and change SystemdCgroup to true (not systemd_cgroup)
-    vi /etc/containerd/config.toml
-    systemctl restart containerd
+    * Containerd configuration 설정
+    sudo mkdir -p /etc/containerd
+    sudo containerd config default | sudo tee /etc/containerd/config.toml
+    sudo sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
+    cat /etc/containerd/config.toml
     
-    swapoff -a  <<<<<<<< just disable it in /etc/fstab instead
+    sudo systemctl restart containerd.service
     
-    apt-get update
-    apt-get install -y apt-transport-https ca-certificates curl gpg
+    sudo systemctl status containerd
     
-    mkdir -p -m 755 /etc/apt/keyrings
+    * Kubernetes Management Tools 설치
+    sudo apt-get update
+    sudo apt-get install -y ca-certificates curl
+    sudo apt-get install -y apt-transport-https ca-certificates curl
+    
+    
     curl -fsSL https://pkgs.k8s.io/core:/stable:/v1.29/deb/Release.key | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+    
     echo 'deb [signed-by=/etc/apt/keyrings/kubernetes-apt-keyring.gpg] https://pkgs.k8s.io/core:/stable:/v1.29/deb/ /' | sudo tee /etc/apt/sources.list.d/kubernetes.list
     
-    apt-get update
+    sudo apt-get update
+    sudo apt-get install -y kubelet kubeadm kubectl
+    sudo apt-mark hold kubelet kubeadm kubectl
+
+    # Master Node Only
+    sudo kubeadm init --apiserver-advertise-address=192.168.10.2 --pod-network-cidr=192.168.0.0/16 --cri-socket /run/containerd/containerd.sock --ignore-preflight-errors Swap
+
+    mkdir -p $HOME/.kube
+    sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+    sudo chown $(id -u):$(id -g) $HOME/.kube/config
     
-    reboot
+    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
     
-    sudo su
-    
-    apt-get install -y kubelet=1.29.1-1.1 kubeadm=1.29.1-1.1 kubectl=1.29.1-1.1
-    apt-mark hold kubelet kubeadm kubectl
-    
-    # check swap config, ensure swap is 0
-    free -m
-    
-    
-    ### CONTROL PLANE 부분만 설정 ###
-    ### ONLY ON CONTROL NODE .. control plane install:
-    kubeadm init --pod-network-cidr 10.10.0.0/16 --kubernetes-version 1.29.1 --node-name k8s-control
-    
-    export KUBECONFIG=/etc/kubernetes/admin.conf
-    
-    # add Calico 3.27.2 CNI 
-    kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/tigera-operator.yaml
-    wget https://raw.githubusercontent.com/projectcalico/calico/v3.27.2/manifests/custom-resources.yaml
-    vi custom-resources.yaml <<<<<< edit the CIDR for pods if its custom
-    kubectl apply -f custom-resources.yaml
-    
-    # get worker node commands to run to join additional nodes into cluster
     kubeadm token create --print-join-command
-    ###
-    
-    
-    ### ONLY ON WORKER nodes
-    Run the command from the token create output above
 
 ### Kubernetes에 배포하기(deployment.yml, service.yml)
 
