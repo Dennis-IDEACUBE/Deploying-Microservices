@@ -84,7 +84,7 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     docker run --name catalog-service -d -p 9001:9001 -e SPRING_DATASOURCE_URL=jdbc:mysql://mysql-db:3306/polardb_catalog  --net mynet localhost:5000/catalog-service:0.0.1-SNAPSHOT
 
 ### Kubernetes Cluster 구성하기 ###
-    ## Master Node & Worker Node
+    <ui>## Master Node & Worker Node</ui>
 
     sudo nano /etc/netplan/01-network-manager-all.yaml # 각각의 ip address 설정
     
