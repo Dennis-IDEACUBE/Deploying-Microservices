@@ -1,0 +1,28 @@
+services:
+
+  # Applications
+  catalog-service:
+    depends_on:
+      - polar-mysql
+    image: "catalog-service:0.0.1-SNAPSHOT"
+    container_name: "catalog-service"
+    restart: always
+    ports:
+      - 9001:9001
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:mysql://polar-mysql:3306/polardb_catalog
+      - SPRING_DATASOURCE_USERNAME=user1
+      - SPRING_DATASOURCE_PASSWORD=1234
+      #- SPRING_PROFILES_ACTIVE=testdata
+  
+  # Backing Services
+  polar-mysql:
+    image: "mysql:latest"
+    container_name: "polar-mysql"
+    ports:
+      - 3306:3306
+    environment:
+      - MYSQL_ROOT_PASSWORD=1234
+      - MYSQL_USER=user1
+      - MYSQL_PASSWORD=1234
+      - MYSQL_DATABASE=polardb_catalog

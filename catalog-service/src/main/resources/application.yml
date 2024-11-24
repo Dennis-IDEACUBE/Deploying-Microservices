@@ -1,0 +1,27 @@
+server:
+  port: 9001
+  #tomcat:
+  #  connection-timeout: 2s
+  #  keep-alive-timeout: 15s
+  #  threads:
+  #    max: 50
+  #    min-spare: 5
+
+spring:
+  application:
+    name: catalog-service
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: user1
+    password: 1234
+    url: jdbc:mysql://mysql-db:3306/polardb_catalog_dev
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: update
+        
+management:
+  endpoints:
+    web:
+      exposure:
+        include: refresh
