@@ -147,6 +147,7 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     sudo apt-get install -y kubelet kubeadm kubectl
     sudo apt-mark hold kubelet kubeadm kubectl
 
+
     # Master Node Only
     sudo kubeadm init --apiserver-advertise-address=192.168.10.2 --pod-network-cidr=192.168.0.0/16 --cri-socket /run/containerd/containerd.sock --ignore-preflight-errors Swap
 
@@ -157,6 +158,10 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
     
     kubeadm token create --print-join-command
+    
+
+    # Worker Node Only
+    sudo kubeadm join 192.168.10.2:6443 --token
 
 ### Kubernetes에 배포하기(deployment.yml, service.yml)
 
