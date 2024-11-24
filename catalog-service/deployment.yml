@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: catalog-service
-          image: catalog-service
+          image: dennis1945/catalog-service:0.0.1-SNAPSHOT
           imagePullPolicy: IfNotPresent
           lifecycle:
             preStop:
