@@ -88,7 +88,7 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     
     sudo su
     
-    printf "\n10.0.2.4 k8s-control\n10.0.2.5 k8s-1\n10.0.2.6 k8s-1\n\n" >> /etc/hosts
+    printf "\n10.0.2.4 myserver01\n10.0.2.5 myserver02\n10.0.2.6 myserver03\n\n" >> /etc/hosts
     
     printf "overlay\nbr_netfilter\n" >> /etc/modules-load.d/containerd.conf
     
