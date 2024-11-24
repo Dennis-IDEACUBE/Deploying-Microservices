@@ -163,8 +163,16 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
 
     ## Worker Node Only
     ##############################################################################################
-    sudo kubeadm join 192.168.10.2:6443 --token
+    sudo kubeadm join 192.168.10.2:6443 --token 위에 print-join-command 출력 토큰을 입력
 
+    kubectl get pod -A
+    kubectl get node -o wide
+
+    kubectl run nginx-deployment --image=nginx --port=80
+    kubectl expose deployment nginx-deployment --type=LoadBalancer --name=nginx-service
+    kubectl get pods
+    kubectl get services
+    
 ### Kubernetes에 배포하기(deployment.yml, service.yml)
 
     ### deployment.yml #############################
