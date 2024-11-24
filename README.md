@@ -159,12 +159,10 @@ https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=dri
     kubectl create -f https://raw.githubusercontent.com/projectcalico/calico/v3.24.1/manifests/tigera-operator.yaml
     
     kubeadm token create --print-join-command
-    
 
-    ## Worker Node Only
+
+    ## Master Node Only
     ##############################################################################################
-    sudo kubeadm join 192.168.10.2:6443 --token 위에 print-join-command 출력 토큰을 입력
-
     kubectl get pod -A
     kubectl get node -o wide
 
