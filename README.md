@@ -1,6 +1,3 @@
-### Google Drive Path ###
-https://drive.google.com/drive/folders/1drUGDcoWGTehvUSHhJnXkOF9pKRbD3NM?usp=drive_link
-
 ### Dockerfile로 배포하기(Dockerfile)
     - myapp
     mvn clean package    
